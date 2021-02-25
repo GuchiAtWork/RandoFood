@@ -1,7 +1,11 @@
 package com.example.randofood
 
+import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.android.volley.Request
 import com.android.volley.Response
@@ -13,12 +17,14 @@ import java.io.StringReader
 
 class MainActivity : AppCompatActivity() {
 
-    private val restaurants: MutableList<HashMap<String, String?>> = ArrayList()
+    private val restaurants: ArrayList<HashMap<String, String?>> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+    }
 
+    fun showRestaurant(view: View) {
         sendAndRequestResponse()
     }
 
@@ -31,7 +37,6 @@ class MainActivity : AppCompatActivity() {
 
         //String Request initialized
         val mStringRequest = StringRequest(Request.Method.GET, url, Response.Listener { response ->
-//            Log.i(MainActivity::class.java.name, response)
 
             val klaxon = Klaxon()
             val parsed = klaxon.parseJsonObject(StringReader(response))
@@ -53,7 +58,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-            println(restaurants)
+            val intent = Intent(this, RestaurantActivity::class.java).apply {
+                putExtra("restaurants", restaurants)
+            }
+            startActivityForResult(intent, 500)
 
         }, Response.ErrorListener { error ->
             Log.i(MainActivity::class.java.name, "Error :$error")
